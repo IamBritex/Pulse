@@ -14,6 +14,7 @@ class MainMenuState {
         this.sessionTimeElement = null;
         this.sessionStartTime = Date.now();
         this.timeUpdateInterval = null;
+        this.splashTexts = []; // Array para almacenar las líneas de splash text
         this.userObjElement = null;
         this.usernameElement = null;
         this.userAvatarElement = null;
@@ -61,8 +62,11 @@ class MainMenuState {
     }
     
     init() {
+        // Reiniciar el tiempo de sesión cada vez que se inicializa
+        this.sessionStartTime = Date.now();
         this.createMainMenuScreen();
         this.loadBackgroundImage();
+        this.loadSplashTexts(); // Cargar los textos de splash
     }
     
     createMainMenuScreen() {
@@ -132,7 +136,7 @@ class MainMenuState {
         // Crear elemento del texto splash
         const splashText = document.createElement('div');
         splashText.className = 'splash-text-menu';
-        splashText.textContent = 'Now with Ray Tracing';
+        splashText.textContent = 'Loading...'; // Texto temporal hasta cargar el archivo
         
         // Agregar texto splash al contenedor
         this.container.appendChild(splashText);
@@ -235,16 +239,16 @@ class MainMenuState {
         const userObj = document.createElement('div');
         userObj.className = 'user-obj';
         
-        // Crear imagen de avatar
+        // Crear imagen de avatar (placeholder para usuarios no logueados)
         const userAvatar = document.createElement('img');
         userAvatar.className = 'user-avatar';
         userAvatar.src = 'public/assets/images/Placeholder.png';
-        userAvatar.alt = 'User Avatar';
+        userAvatar.alt = 'User Avatar Placeholder';
         
         // Crear elemento de nombre de usuario
         const username = document.createElement('div');
         username.className = 'username';
-        username.textContent = 'user';
+        username.textContent = 'login'; // Mostrar "login" cuando no hay sesión iniciada
         
         // Agregar elementos al contenedor de usuario
         userObj.appendChild(userAvatar);
@@ -769,6 +773,78 @@ class MainMenuState {
     }
     
     /**
+     * Carga los textos de splash desde el archivo
+     */
+    async loadSplashTexts() {
+        try {
+            const response = await fetch('public/assets/data/splash-text.txt');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const content = await response.text();
+            
+            // Dividir por líneas y filtrar líneas vacías
+            this.splashTexts = content
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            if (this.splashTexts.length === 0) {
+                throw new Error('No splash texts found');
+            }
+            
+            // Seleccionar y mostrar un texto aleatorio
+            this.displayRandomSplashText();
+            
+            console.log(`Loaded ${this.splashTexts.length} splash texts`);
+            
+        } catch (error) {
+            console.error('Error loading splash texts:', error);
+            this.displayFallbackSplashText();
+        }
+    }
+    
+    /**
+     * Muestra un texto de splash aleatorio
+     */
+    displayRandomSplashText() {
+        if (!this.splashTextElement || this.splashTexts.length === 0) return;
+        
+        // Seleccionar índice aleatorio
+        const randomIndex = Math.floor(Math.random() * this.splashTexts.length);
+        const selectedText = this.splashTexts[randomIndex];
+        
+        // Actualizar el texto con animación suave
+        this.splashTextElement.style.opacity = '0';
+        
+        setTimeout(() => {
+            this.splashTextElement.textContent = selectedText;
+            this.splashTextElement.style.opacity = '1';
+        }, 15);
+        
+        console.log(`Displaying splash text: "${selectedText}"`);
+    }
+    
+    /**
+     * Muestra texto de splash de fallback si no se puede cargar el archivo
+     */
+    displayFallbackSplashText() {
+        if (!this.splashTextElement) return;
+        
+        const fallbackTexts = [
+            'Now with Ray Tracing',
+            '¡Calienta esos dedos!',
+            'Feel the beat',
+            'Ready to pulse?'
+        ];
+        
+        const randomIndex = Math.floor(Math.random() * fallbackTexts.length);
+        this.splashTextElement.textContent = fallbackTexts[randomIndex];
+        this.splashTextElement.style.opacity = '1';
+    }
+    
+    /**
      * Crea todos los objetos del menú principal
      */
     createMenuObjects() {
@@ -924,7 +1000,7 @@ class MainMenuState {
         // Configurar parallax después de que la imagen se carga
         setTimeout(() => {
             this.setupParallaxEffect();
-        }, 300);
+        });
         
         console.log('Main menu background loaded successfully');
     }
@@ -984,7 +1060,7 @@ class MainMenuState {
         const centerY = mouseY - 0.5;
         
         // Calcular el desplazamiento del parallax (intensidad más sutil para el main menu)
-        const parallaxStrength = 25; // Reducido para movimiento más sutil
+        const parallaxStrength = 70; // Reducido para movimiento más sutil
         this.targetParallaxX = centerX * parallaxStrength;
         this.targetParallaxY = centerY * parallaxStrength;
         
@@ -1199,6 +1275,7 @@ class MainMenuState {
         this.explorarElement = null;
         this.exitElement = null;
         this.isLoaded = false;
+        this.splashTexts = []; // Limpiar array de splash texts
         
         // Limpiar modal de info
         this.infoModalOverlay = null;

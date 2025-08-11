@@ -170,7 +170,7 @@ class WelcomeState {
         const centerY = mouseY - 0.5;
         
         // Calcular el desplazamiento del parallax (mayor intensidad para movimiento más visible)
-        const parallaxStrength = 50; // Mayor intensidad para movimiento más visible
+        const parallaxStrength = 70; // Mayor intensidad para movimiento más visible
         const offsetX = centerX * parallaxStrength;
         const offsetY = centerY * parallaxStrength;
         
