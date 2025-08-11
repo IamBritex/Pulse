@@ -1,0 +1,189 @@
+/* ===== PULSE GAME CONTAINER - OPTIMIZED ===== */
+
+/* Reset optimizado */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    /* Mejoras de rendimiento */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    
+    /* Optimizaciones de rendimiento */
+    will-change: auto;
+    transform: translateZ(0); /* Hardware acceleration */
+}
+
+/* Contenedor principal optimizado */
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    
+    /* Optimización de compositing */
+    contain: layout style;
+}
+
+/* Contenedor del juego - Scale FIT sin deformación */
+.game-container {
+    /* Proporción exacta 16:9 SIEMPRE */
+    aspect-ratio: 16/9;
+    
+    /* Escalado FIT sin límites - NUNCA se deforma */
+    width: min(100vw, calc(100vh * 1.777778)); /* 16/9 precalculado */
+    height: min(100vh, calc(100vw * 0.5625));  /* 9/16 precalculado */
+    
+    /* Estilos visuales */
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    position: relative;
+    overflow: hidden;
+    
+    /* CRÍTICO: Prevenir cualquier deformación */
+    flex-shrink: 0;
+    flex-grow: 0;
+    min-width: 0;
+    min-height: 0;
+    
+    /* Optimizaciones de rendimiento */
+    contain: layout style paint;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Contenido Canvas - NUNCA se deforma */
+.content {
+    /* Dimensiones fijas del canvas - INMUTABLES */
+    width: 1280px !important;
+    height: 720px !important;
+    
+    /* Posicionamiento absoluto desde origin */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    
+    /* Escalado perfecto sin deformación */
+    transform-origin: 0 0 !important;
+    backface-visibility: hidden;
+    
+    /* Layout por defecto si no hay contenido específico */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    /* Estilos visuales por defecto */
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    
+    /* CRÍTICO: Prevenir cualquier override que cause deformación */
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    min-width: 1280px !important;
+    min-height: 720px !important;
+    max-width: 1280px !important;
+    max-height: 720px !important;
+    
+    /* Optimizaciones de rendimiento */
+    contain: layout style;
+    will-change: transform;
+}
+
+/* Tipografía optimizada */
+.content h1 {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #4CAF50;
+    
+    /* Optimización de texto */
+    text-rendering: optimizeSpeed;
+    font-display: swap;
+}
+
+.content p {
+    font-size: 24px;
+    font-weight: 400;
+    color: #ccc;
+    max-width: 800px;
+    line-height: 1.5;
+    
+    /* Optimización de texto */
+    text-rendering: optimizeSpeed;
+    font-display: swap;
+}
+
+/* Debug info optimizado */
+.game-container::before {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    
+    /* Estilos minimalistas */
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    
+    /* Tipografía optimizada */
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.2;
+    
+    /* Límites y posicionamiento */
+    max-width: 200px;
+    z-index: 1000;
+    
+    /* Optimizaciones */
+    contain: layout style;
+    pointer-events: none;
+}
+
+/* === MEDIA QUERIES OPTIMIZADAS === */
+
+/* Mejoras para pantallas de alta densidad */
+@media (min-resolution: 2dppx) {
+    body {
+        -webkit-font-smoothing: subpixel-antialiased;
+    }
+}
+
+/* Optimización para dispositivos móviles */
+@media (max-width: 768px) {
+    .game-container {
+        border-width: 1px; /* Borde más delgado en móviles */
+    }
+    
+    .game-container::before {
+        font-size: 8px;
+        padding: 2px 4px;
+    }
+}
+
+/* Modo debug deshabilitado en producción */
+@media (prefers-reduced-motion: reduce) {
+    .game-container::before {
+        display: none;
+    }
+}

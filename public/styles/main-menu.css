@@ -1,0 +1,757 @@
+/* Main Menu State Styles */
+.main-menu-state {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Control Center Navigation Bar */
+.controlcenter-body {
+    width: 1281px;
+    height: 34px;
+    backdrop-filter: blur(100px);
+    background: rgba(77, 77, 77, 0.3);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.controlcenter-body.show {
+    opacity: 1;
+}
+
+/* Time Display Container */
+.time-display {
+    width: 183px;
+    height: 29.56px;
+    position: absolute;
+    top: 3.08px;
+    right: 0.88px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Local Time Style */
+.local-time {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+/* Session Time Style */
+.session-time {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* User Object Container */
+.user-obj {
+    width: 107px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.35);
+    position: absolute;
+    top: 3px;
+    right: 193px;
+    z-index: 5;
+    user-select: none;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Username Text */
+.username {
+    width: 74px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: center;
+    position: absolute;
+    top: 5px;
+    right: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* User Avatar Image */
+.user-avatar {
+    width: 23.05px;
+    height: 22px;
+    border-radius: 7px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+/* Social Object Container */
+.social-obj {
+    width: 94px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.35);
+    position: absolute;
+    top: 3px;
+    right: 317px;
+    z-index: 5;
+    user-select: none;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Social Icon */
+.social-icon {
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    max-width: 20px;
+    max-height: 20px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+/* Social Text */
+.social-text {
+    width: 43px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: center;
+    position: absolute;
+    top: 5px;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* DL Button */
+.dl-button {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    position: absolute;
+    top: 3px;
+    right: 431px;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease-in-out;
+}
+
+.dl-button:hover {
+    transform: scale(1.1);
+}
+
+.dl-button.jump {
+    animation: button-jump 0.3s ease-in-out;
+}
+
+/* Info Button */
+.info-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    position: absolute;
+    top: 3px;
+    right: 471px;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease-in-out;
+}
+
+.info-btn:hover {
+    transform: scale(1.1);
+}
+
+.info-btn.jump {
+    animation: button-jump 0.3s ease-in-out;
+}
+
+/* Music Button */
+.music-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    position: absolute;
+    top: 3px;
+    right: 511px;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease-in-out;
+}
+
+.music-btn:hover {
+    transform: scale(1.1);
+}
+
+.music-btn.jump {
+    animation: button-jump 0.3s ease-in-out;
+}
+
+/* Options Button */
+.options-button {
+    width: 15px;
+    height: 13px;
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease-in-out;
+}
+
+.options-button:hover {
+    transform: scale(1.1);
+}
+
+.options-button.jump {
+    animation: button-jump 0.3s ease-in-out;
+}
+
+/* Animación de salto para botones */
+@keyframes button-jump {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    30% {
+        transform: translateY(-8px) scale(1.1);
+    }
+    60% {
+        transform: translateY(-4px) scale(1.05);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Noticias Object Container */
+.noticias-obj {
+    width: 308px;
+    height: 382px;
+    border-radius: 24px;
+    backdrop-filter: blur(100px);
+    background: rgba(42, 42, 42, 0.3);
+    position: absolute;
+    bottom: 157px;
+    right: 93px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.noticias-obj.show {
+    opacity: 1;
+}
+
+/* Noticias Text */
+.noticias-text {
+    width: 51px;
+    height: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1px;
+    letter-spacing: 1px;
+    text-align: center;
+    position: absolute;
+    top: 8px;
+    right: 128px;
+    z-index: 4;
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Noticias Bitmap Container */
+.noticias-bitmap {
+    width: 242.49px;
+    height: 135.49px;
+    border-radius: 10px;
+    position: absolute;
+    top: 26.22px;
+    right: 32.07px;
+    z-index: 4;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    pointer-events: auto;
+    cursor: pointer;
+    display: block;
+}
+
+/* Noticias Content Container */
+.noticias-content {
+    width: 258px;
+    height: 179px;
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    z-index: 4;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 2;
+    text-align: left;
+    padding: 8px;
+    box-sizing: border-box;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Noticias Divider */
+.noticias-divider {
+    width: 308px;
+    height: 0.87px;
+    background: radial-gradient(6207369.00% 50.00% at 50% 50%, rgba(255, 255, 255, 1) 14%, rgba(255, 255, 255, 0) 87%);
+    position: absolute;
+    bottom: 27.13px;
+    left: 0;
+    z-index: 4;
+}
+
+/* Noticias Read More Text */
+.noticias-read-more {
+    width: 128px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: left;
+    position: absolute;
+    bottom: 12px;
+    left: 96px;
+    z-index: 4;
+    user-select: none;
+    pointer-events: auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.main-menu-bg {
+    width: 130%;
+    height: 130%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    position: absolute;
+    top: -15%;
+    left: -15%;
+    z-index: 1;
+    transform-origin: center center;
+    transform: scale(1);
+}
+
+.pulse-title-menu {
+    width: 402px;
+    height: 116px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 80px;
+    font-weight: 600;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: center;
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    pointer-events: none;
+    transition: all 0.8s ease-in-out;
+}
+
+.splash-text-menu {
+    width: 237px;
+    height: 27px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: center;
+    position: absolute;
+    top: 22%;
+    left: 15%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    pointer-events: none;
+    transition: all 0.8s ease-in-out;
+}
+
+/* Background Object - Cuadro con blur */
+.background-obj {
+    width: 333px;
+    height: 424px;
+    border-radius: 20px;
+    backdrop-filter: blur(100px);
+    background: rgba(42, 42, 42, 0.3);
+    position: absolute;
+    top: 65%;
+    left: 2%;
+    transform: translateY(-50%);
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.background-obj.show {
+    opacity: 1;
+}
+
+/* Multijugador Object Container */
+.multijugador-obj {
+    width: 289px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: 50%;
+    left: 3.7%;
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.multijugador-obj.show {
+    opacity: 1;
+}
+
+.multijugador-obj:hover {
+    background: linear-gradient(270.00deg, rgba(138.99998474121094, 167.2758331298828, 220.99998474121094, 1), rgba(206, 139, 221, 0) 100%);
+}
+
+/* Play Object Container */
+.play-obj {
+    width: 289px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: calc(50% - 80px); /* 16px + 64px separación del multijugador */
+    left: 3.7%;
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.play-obj.show {
+    opacity: 1;
+}
+
+.play-obj:hover {
+    background: linear-gradient(270.00deg, rgba(138.99998474121094, 167.2758331298828, 220.99998474121094, 1), rgba(206, 139, 221, 0) 100%);
+}
+
+/* Editor Object Container */
+.editor-obj {
+    width: 289px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: calc(50% + 80px); /* 16px + 64px separación del multijugador */
+    left: 3.7%;
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.editor-obj.show {
+    opacity: 1;
+}
+
+.editor-obj:hover {
+    background: linear-gradient(270.00deg, rgba(138.99998474121094, 167.2758331298828, 220.99998474121094, 1), rgba(206, 139, 221, 0) 100%);
+}
+
+/* Explorar Object Container */
+.explorar-obj {
+    width: 289px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: calc(50% + 160px); /* 32px + 128px separación del multijugador */
+    left: 3.7%;
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.explorar-obj.show {
+    opacity: 1;
+}
+
+.explorar-obj:hover {
+    background: linear-gradient(270.00deg, rgba(138.99998474121094, 167.2758331298828, 220.99998474121094, 1), rgba(206, 139, 221, 0) 100%);
+}
+
+/* Exit Object Container */
+.exit-obj {
+    width: 289px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: calc(50% + 240px); /* 48px + 192px separación del multijugador */
+    left: 3.7%;
+    z-index: 3;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.exit-obj.show {
+    opacity: 1;
+}
+
+.exit-obj:hover {
+    background: linear-gradient(270.00deg, rgba(138.99998474121094, 167.2758331298828, 220.99998474121094, 1), rgba(206, 139, 221, 0) 100%);
+}
+
+/* Menu Text Styles */
+.menu-text {
+    width: 47px;
+    height: 24px;
+    color: rgba(255, 255, 255, 1);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: left;
+    position: absolute;
+    top: 12px;
+    left: 24px;
+    z-index: 4;
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Menu Secondary Text Styles */
+.menu-secondary-text {
+    width: 129px;
+    height: 17px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1px;
+    letter-spacing: 0px;
+    text-align: left;
+    position: absolute;
+    bottom: 11px;
+    left: 24px;
+    z-index: 4;
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Menu Icon Styles */
+.menu-icon {
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 20px;
+    right: 31px;
+    z-index: 4;
+    user-select: none;
+    pointer-events: none;
+    max-width: 24px;
+    max-height: 24px;
+    object-fit: contain;
+}
+
+/* Info Modal Overlay */
+.info-modal-overlay {
+    width: 1280px;
+    height: 720px;
+    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.info-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Info Modal Window */
+.web-info-obj {
+    width: 866px;
+    height: 684px;
+    border-radius: 24px;
+    background: rgba(34, 25, 36, 1);
+    position: relative;
+    z-index: 101;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.info-modal-overlay.show .web-info-obj {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Info Modal Content */
+.info-modal-content {
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+/* Info Modal Close Button */
+.info-modal-close {
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 6px; /* 6px desde el borde superior del contenedor */
+    right: -34px; /* 6px fuera del contenedor (28px ancho del botón + 6px separación) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out 0.2s; /* Delay para que aparezca después de la modal */
+}
+
+.info-modal-close img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.info-modal-overlay.show .info-modal-close {
+    opacity: 1;
+}
+
+/* Info Modal Additional Button */
+.info-modal-extra-btn {
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 42px; /* 6px desde arriba + 28px del quit btn + 8px separación = 42px */
+    right: -34px; /* Misma posición horizontal que el botón de cerrar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out 0.3s; /* Delay mayor para que aparezca después del quit btn */
+}
+
+.info-modal-extra-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.info-modal-overlay.show .info-modal-extra-btn {
+    opacity: 1;
+}
