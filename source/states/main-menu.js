@@ -46,7 +46,16 @@ class MainMenuState {
         this.infoModalExtraBtn = null;
         this.isInfoModalOpen = false;
         this.webViewerInfo = null; // Instancia del web viewer
-        this.currentUrl = 'https://es.wikipedia.org/wiki/Videojuego'; // URL que se mostrará en el web viewer
+        this.currentUrl = 'https://iambritex.github.io/Pulse-web/'; // URL que se mostrará en el web viewer
+        
+        // Propiedades para el efecto parallax
+        this.parallaxEnabled = false;
+        this.parallaxListener = null;
+        this.currentParallaxX = 0;
+        this.currentParallaxY = 0;
+        this.targetParallaxX = 0;
+        this.targetParallaxY = 0;
+        this.parallaxAnimationId = null;
         
         // No inicializar automáticamente, será llamado desde WelcomeState
     }
@@ -779,6 +788,7 @@ class MainMenuState {
         playSecondaryText.className = 'menu-secondary-text';
         playSecondaryText.textContent = '¡Calienta esos dedos!';
         this.playElement.appendChild(playSecondaryText);
+
         
         // Crear icono para Play
         const playIcon = document.createElement('img');
@@ -911,6 +921,11 @@ class MainMenuState {
     }
     
     onImageLoaded() {
+        // Configurar parallax después de que la imagen se carga
+        setTimeout(() => {
+            this.setupParallaxEffect();
+        }, 300);
+        
         console.log('Main menu background loaded successfully');
     }
     
@@ -927,6 +942,119 @@ class MainMenuState {
         `;
         this.backgroundImage.innerHTML = 'PULSE';
         this.backgroundImage.removeAttribute('src');
+    }
+    
+    /**
+     * Configura el efecto parallax para el background
+     */
+    setupParallaxEffect() {
+        if (!this.backgroundImage || !this.container) return;
+        
+        this.parallaxListener = (event) => {
+            this.updateParallax(event);
+        };
+        
+        // Agregar listener al contenedor del juego
+        const gameContainer = document.getElementById('gameContainer');
+        if (gameContainer) {
+            gameContainer.addEventListener('mousemove', this.parallaxListener);
+            this.parallaxEnabled = true;
+            console.log('Main menu parallax effect enabled');
+        }
+    }
+    
+    /**
+     * Actualiza la posición del background basado en la posición del mouse
+     */
+    updateParallax(event) {
+        if (!this.backgroundImage || !this.parallaxEnabled) return;
+        
+        const gameContainer = document.getElementById('gameContainer');
+        if (!gameContainer) return;
+        
+        // Obtener las dimensiones y posición del contenedor
+        const rect = gameContainer.getBoundingClientRect();
+        
+        // Calcular la posición del mouse relativa al contenedor (0-1)
+        const mouseX = (event.clientX - rect.left) / rect.width;
+        const mouseY = (event.clientY - rect.top) / rect.height;
+        
+        // Centrar los valores (convertir de 0-1 a -0.5 a 0.5)
+        const centerX = mouseX - 0.5;
+        const centerY = mouseY - 0.5;
+        
+        // Calcular el desplazamiento del parallax (intensidad más sutil para el main menu)
+        const parallaxStrength = 25; // Reducido para movimiento más sutil
+        this.targetParallaxX = centerX * parallaxStrength;
+        this.targetParallaxY = centerY * parallaxStrength;
+        
+        // Iniciar la animación suave si no está ya corriendo
+        if (!this.parallaxAnimationId) {
+            this.animateParallax();
+        }
+    }
+    
+    /**
+     * Anima el parallax con interpolación suave usando requestAnimationFrame
+     */
+    animateParallax() {
+        if (!this.parallaxEnabled || !this.backgroundImage) {
+            this.parallaxAnimationId = null;
+            return;
+        }
+        
+        // Factor de suavizado (entre 0 y 1, más cerca de 0 = más suave)
+        const lerpFactor = 0.12;
+        
+        // Interpolación lineal hacia los valores objetivo
+        this.currentParallaxX += (this.targetParallaxX - this.currentParallaxX) * lerpFactor;
+        this.currentParallaxY += (this.targetParallaxY - this.currentParallaxY) * lerpFactor;
+        
+        // Aplicar la transformación suavizada
+        this.backgroundImage.style.transform = `translate(${this.currentParallaxX}px, ${this.currentParallaxY}px)`;
+        
+        // Continuar la animación si hay diferencia significativa
+        const diffX = Math.abs(this.targetParallaxX - this.currentParallaxX);
+        const diffY = Math.abs(this.targetParallaxY - this.currentParallaxY);
+        
+        if (diffX > 0.1 || diffY > 0.1) {
+            this.parallaxAnimationId = requestAnimationFrame(() => this.animateParallax());
+        } else {
+            this.parallaxAnimationId = null;
+        }
+    }
+    
+    /**
+     * Remueve el efecto parallax
+     */
+    removeParallaxEffect() {
+        if (this.parallaxListener) {
+            const gameContainer = document.getElementById('gameContainer');
+            if (gameContainer) {
+                gameContainer.removeEventListener('mousemove', this.parallaxListener);
+            }
+            this.parallaxListener = null;
+            this.parallaxEnabled = false;
+            
+            // Cancelar animación en curso
+            if (this.parallaxAnimationId) {
+                cancelAnimationFrame(this.parallaxAnimationId);
+                this.parallaxAnimationId = null;
+            }
+            
+            // Resetear valores
+            this.currentParallaxX = 0;
+            this.currentParallaxY = 0;
+            this.targetParallaxX = 0;
+            this.targetParallaxY = 0;
+            
+            // Resetear la posición del fondo
+            if (this.backgroundImage) {
+                this.backgroundImage.style.transform = 'translate(0px, 0px)';
+            }
+            
+            console.log('Main menu parallax effect disabled');
+        }
     }
     
     /**
@@ -1022,6 +1150,9 @@ class MainMenuState {
     destroy() {
         // Limpiar listeners de botones
         this.removeButtonListeners();
+        
+        // Limpiar efecto parallax
+        this.removeParallaxEffect();
         
         // Limpiar modal de info si está abierta
         if (this.isInfoModalOpen) {

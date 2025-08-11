@@ -256,14 +256,24 @@ class WelcomeState {
             this.container.className = 'main-menu-state';
             
             // Crear instancia del MainMenuState para manejar los objetos del menú
-            if (!window.mainMenuState) {
-                window.mainMenuState = new MainMenuState();
-            }
-            window.mainMenuState.init();
-            window.mainMenuState.transitionFromWelcome();
+            const initMainMenu = () => {
+                if (typeof MainMenuState !== 'undefined' && window.MainMenuState) {
+                    if (!window.mainMenuState) {
+                        window.mainMenuState = new MainMenuState();
+                    }
+                    window.mainMenuState.init();
+                    window.mainMenuState.transitionFromWelcome();
+                    
+                    // Opcional: agregar listeners para el main menu aquí
+                    this.setupMainMenuListeners();
+                } else {
+                    // Esperar un poco más si MainMenuState no está disponible
+                    console.log('Waiting for MainMenuState to load...');
+                    setTimeout(initMainMenu, 100);
+                }
+            };
             
-            // Opcional: agregar listeners para el main menu aquí
-            this.setupMainMenuListeners();
+            initMainMenu();
         }, 800); // Duración de la transición CSS de elementos
     }
     

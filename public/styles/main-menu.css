@@ -393,7 +393,7 @@
     left: -15%;
     z-index: 1;
     transform-origin: center center;
-    transform: scale(1);
+    will-change: transform;
 }
 
 .pulse-title-menu {
