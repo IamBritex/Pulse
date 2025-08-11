@@ -1,3 +1,4 @@
+[![IMG](https://i.pinimg.com/736x/8b/d6/17/8bd61790f891b44d1fe33b4a285ec901.jpg)]
 # Pulse - Actualización 2.1
 
 ¡Nuevas funcionalidades disponibles! Esta actualización incluye un sistema de noticias mejorado, mejor rendimiento en el escalado de elementos y una interfaz más pulida.

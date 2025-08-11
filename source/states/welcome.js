@@ -175,7 +175,7 @@ class WelcomeState {
         const offsetY = centerY * parallaxStrength;
         
         // Aplicar la transformación al fondo
-        this.backgroundImage.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+        this.backgroundImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1)`;
     }
     
     removeParallaxEffect() {

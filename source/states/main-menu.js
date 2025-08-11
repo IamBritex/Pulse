@@ -58,6 +58,18 @@ class MainMenuState {
         this.targetParallaxY = 0;
         this.parallaxAnimationId = null;
         
+        // Propiedades para el control de zoom del background
+        this.backgroundZoomed = true; // Estado del zoom (true = zoomed, false = original)
+        this.backgroundZoomAnimationId = null;
+        this.isModalOpen = false; // Estado general de modales abiertas
+        
+        // Sistema de audio para efectos de sonido
+        this.audioSystem = {
+            openWindow: null,
+            clickDown: null,
+            clickUp: null
+        };
+        
         // No inicializar automáticamente, será llamado desde WelcomeState
     }
     
@@ -67,6 +79,52 @@ class MainMenuState {
         this.createMainMenuScreen();
         this.loadBackgroundImage();
         this.loadSplashTexts(); // Cargar los textos de splash
+        this.initializeAudioSystem(); // Inicializar sistema de audio
+    }
+    
+    /**
+     * Inicializa el sistema de audio para efectos de sonido
+     */
+    initializeAudioSystem() {
+        try {
+            // Cargar sonidos para modales
+            this.audioSystem.openWindow = new Audio('public/assets/sounds/openWindow.ogg');
+            this.audioSystem.clickDown = new Audio('public/assets/sounds/ClickDown.ogg');
+            this.audioSystem.clickUp = new Audio('public/assets/sounds/ClickUp.ogg');
+            
+            // Configurar volumen
+            Object.values(this.audioSystem).forEach(audio => {
+                if (audio) {
+                    audio.volume = 1; // Nivel de volumen
+                    audio.preload = 'auto';
+                }
+            });
+            
+            console.log('Audio system initialized successfully');
+        } catch (error) {
+            console.warn('Error initializing audio system:', error);
+        }
+    }
+    
+    /**
+     * Reproduce un sonido específico
+     * @param {string} soundName - Nombre del sonido ('openWindow', 'clickDown', 'clickUp')
+     */
+    playSound(soundName) {
+        try {
+            const audio = this.audioSystem[soundName];
+            if (audio) {
+                // Resetear el audio para permitir reproducción múltiple
+                audio.currentTime = 0;
+                audio.play().catch(error => {
+                    console.warn(`Error playing sound ${soundName}:`, error);
+                });
+            } else {
+                console.warn(`Sound ${soundName} not found in audio system`);
+            }
+        } catch (error) {
+            console.warn(`Error playing sound ${soundName}:`, error);
+        }
     }
     
     createMainMenuScreen() {
@@ -94,16 +152,15 @@ class MainMenuState {
         this.backgroundImage.src = 'public/assets/images/bg.png';
         this.backgroundImage.alt = 'Pulse Background';
         
-        // Agregar imagen al contenedor
         this.container.appendChild(this.backgroundImage);
         
-        // Crear el título PULSE (posición y propiedades del main menu)
+        // Crear el título PULSE
         this.createTitle();
         
-        // Crear el texto splash (nuevo texto)
+        // Crear el texto splash
         this.createSplashText();
         
-        // Crear la barra de navegación superior
+        // Crear el nav
         this.createControlCenter();
         
         // Crear el cuadro de fondo
@@ -352,11 +409,18 @@ class MainMenuState {
         noticiasText.className = 'noticias-text';
         noticiasText.textContent = 'Noticias';
         
-        // Crear elemento del bitmap que captura el contenedor
-        const noticiasBitmap = document.createElement('canvas');
-        noticiasBitmap.className = 'noticias-bitmap';
-        noticiasBitmap.width = 242.49;
-        noticiasBitmap.height = 135.49;
+        // Crear elemento de imagen para mostrar la imagen del markdown
+        const noticiasImage = document.createElement('img');
+        noticiasImage.className = 'noticias-bitmap';
+        noticiasImage.style.cssText = `
+            width: 242.49px;
+            height: 135.49px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 10px;
+            display: block;
+        `;
+        noticiasImage.alt = 'Imagen de noticias';
         
         // Crear contenedor de contenido de noticias
         const noticiasContent = document.createElement('div');
@@ -373,7 +437,7 @@ class MainMenuState {
         
         // Agregar elementos al cuadro de noticias
         noticiasObj.appendChild(noticiasText);
-        noticiasObj.appendChild(noticiasBitmap);
+        noticiasObj.appendChild(noticiasImage);
         noticiasObj.appendChild(noticiasContent);
         noticiasObj.appendChild(noticiasDivider);
         noticiasObj.appendChild(noticiasReadMore);
@@ -384,18 +448,13 @@ class MainMenuState {
         // Guardar referencias
         this.noticiasElement = noticiasObj;
         this.noticiasTextElement = noticiasText;
-        this.noticiasBitmapElement = noticiasBitmap;
+        this.noticiasBitmapElement = noticiasImage;
         this.noticiasContentElement = noticiasContent;
         this.noticiasDividerElement = noticiasDivider;
         this.noticiasReadMoreElement = noticiasReadMore;
         
         // Cargar el contenido del archivo MD más reciente
         this.loadLatestNewsContent();
-        
-        // Programar la captura del bitmap después de que todo esté renderizado
-        setTimeout(() => {
-            this.captureBitmap();
-        }, 100);
     }
     
     /**
@@ -541,11 +600,13 @@ class MainMenuState {
         
         // Agregar event listeners
         this.infoModalClose.addEventListener('click', () => {
+            this.playSound('clickDown'); // Sonido de cerrar modal
             this.hideInfoModal();
         });
         
         // Event listener para el botón go-to (abrir en nueva pestaña)
         this.infoModalExtraBtn.addEventListener('click', () => {
+            this.playSound('clickUp'); // Sonido de ir a la página
             if (this.currentUrl) {
                 window.open(this.currentUrl, '_blank');
                 console.log('Opening URL in new tab:', this.currentUrl);
@@ -555,6 +616,7 @@ class MainMenuState {
         // Cerrar modal al hacer click en el overlay (fuera de la ventana)
         this.infoModalOverlay.addEventListener('click', (event) => {
             if (event.target === this.infoModalOverlay) {
+                this.playSound('clickDown'); // Sonido de cerrar modal
                 this.hideInfoModal();
             }
         });
@@ -562,6 +624,7 @@ class MainMenuState {
         // Cerrar modal con tecla Escape
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && this.isInfoModalOpen) {
+                this.playSound('clickDown'); // Sonido de cerrar modal
                 this.hideInfoModal();
             }
         });
@@ -574,6 +637,12 @@ class MainMenuState {
      */
     async showInfoModal() {
         if (this.isInfoModalOpen) return;
+        
+        // Reproducir sonido de abrir ventana
+        this.playSound('openWindow');
+        
+        // Desactivar parallax y hacer zoom out del background
+        this.disableParallaxAndZoomOut();
         
         // Crear la modal si no existe
         if (!this.infoModalOverlay) {
@@ -602,7 +671,7 @@ class MainMenuState {
             // Fallback: mostrar mensaje de error
             this.infoModalContent.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.9); text-align: center;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                    <div style="font-size: 48px; margin-bottom: 20px;">EY!</div>
                     <h2 style="font-size: 24px; margin-bottom: 15px;">Error de Conexión</h2>
                     <p style="font-size: 16px; max-width: 80%; opacity: 0.8;">
                         No se pudo cargar el contenido web. Verifica tu conexión a internet.
@@ -617,7 +686,7 @@ class MainMenuState {
             this.isInfoModalOpen = true;
         }, 10);
         
-        console.log('Info modal shown');
+        console.log('Info modal shown with parallax disabled and background zoomed out');
     }
     
     /**
@@ -641,6 +710,9 @@ class MainMenuState {
         this.infoModalOverlay.classList.remove('show');
         this.isInfoModalOpen = false;
         
+        // Reactivar parallax y hacer zoom in del background
+        this.enableParallaxAndZoomIn();
+        
         // Destruir web viewer si existe
         if (this.webViewerInfo) {
             this.webViewerInfo.destroy();
@@ -654,82 +726,40 @@ class MainMenuState {
             }
         }, 300);
         
-        console.log('Info modal hidden');
+        console.log('Info modal hidden with parallax enabled and background zoomed in');
     }
     
-    captureBitmap() {
-        if (!this.noticiasBitmapElement || !this.container) return;
-        
-        // Usar html2canvas para capturar el contenedor completo
-        if (typeof html2canvas !== 'undefined') {
-            html2canvas(this.container, {
-                width: this.container.offsetWidth,
-                height: this.container.offsetHeight,
-                scale: 0.5, // Escala reducida para que quepa en el bitmap
-                useCORS: true,
-                allowTaint: true
-            }).then(canvas => {
-                // Obtener el contexto del canvas del bitmap
-                const ctx = this.noticiasBitmapElement.getContext('2d');
-                
-                // Limpiar el canvas
-                ctx.clearRect(0, 0, this.noticiasBitmapElement.width, this.noticiasBitmapElement.height);
-                
-                // Calcular la escala para que la imagen quepa completamente
-                const scaleX = this.noticiasBitmapElement.width / canvas.width;
-                const scaleY = this.noticiasBitmapElement.height / canvas.height;
-                const scale = Math.min(scaleX, scaleY);
-                
-                // Calcular el tamaño escalado
-                const scaledWidth = canvas.width * scale;
-                const scaledHeight = canvas.height * scale;
-                
-                // Calcular la posición centrada
-                const x = (this.noticiasBitmapElement.width - scaledWidth) / 2;
-                const y = (this.noticiasBitmapElement.height - scaledHeight) / 2;
-                
-                // Dibujar la imagen capturada en el canvas del bitmap
-                ctx.drawImage(canvas, x, y, scaledWidth, scaledHeight);
-            }).catch(error => {
-                console.error('Error capturando bitmap:', error);
-                // Fallback: crear un gradiente simple
-                this.createFallbackBitmap();
-            });
-        } else {
-            // Fallback si html2canvas no está disponible
-            this.createFallbackBitmap();
-        }
-    }
-    
-    createFallbackBitmap() {
+    displayFallbackImage() {
         if (!this.noticiasBitmapElement) return;
         
-        const ctx = this.noticiasBitmapElement.getContext('2d');
+        // Usar una imagen placeholder o crear una imagen de fallback
+        this.noticiasBitmapElement.src = 'public/assets/images/Placeholder.png';
+        this.noticiasBitmapElement.alt = 'Sin imagen disponible';
         
-        // Crear un gradiente como fallback
-        const gradient = ctx.createLinearGradient(0, 0, this.noticiasBitmapElement.width, this.noticiasBitmapElement.height);
-        gradient.addColorStop(0, 'rgba(138, 167, 221, 0.8)');
-        gradient.addColorStop(1, 'rgba(206, 139, 221, 0.8)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.noticiasBitmapElement.width, this.noticiasBitmapElement.height);
-        
-        // Agregar texto de fallback
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = '12px DM Sans, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Main Menu Preview', this.noticiasBitmapElement.width / 2, this.noticiasBitmapElement.height / 2);
+        console.log('Mostrando imagen de fallback para noticias');
     }
     
     async loadLatestNewsContent() {
         if (!this.noticiasContentElement) return;
         
         try {
-            // Intentar cargar el archivo news.md (en un entorno real, aquí buscarías el más reciente)
-            const response = await fetch('news/news.md');
+            // Cargar el archivo news.md desde la nueva ruta
+            const response = await fetch('web/news/news.md');
             if (response.ok) {
                 const content = await response.text();
-                this.displayNewsContent(content);
+                
+                // Obtener la fecha de última modificación del header de respuesta
+                const lastModified = response.headers.get('last-modified');
+                let fileDate = null;
+                if (lastModified) {
+                    fileDate = new Date(lastModified);
+                } else {
+                    // Fallback: usar fecha actual
+                    fileDate = new Date();
+                }
+                
+                this.displayNewsContent(content, fileDate);
+                this.extractAndDisplayImage(content);
             } else {
                 this.displayFallbackNews();
             }
@@ -739,30 +769,113 @@ class MainMenuState {
         }
     }
     
-    displayNewsContent(content) {
+    displayNewsContent(content, fileDate = null) {
         if (!this.noticiasContentElement) return;
         
-        // Limpiar el contenido MD básico (remover # y otros caracteres de markdown)
-        let cleanContent = content
-            .replace(/^#+ /gm, '') // Remover headers
-            .replace(/\*\*(.*?)\*\*/g, '$1') // Remover bold
-            .replace(/\*(.*?)\*/g, '$1') // Remover italic
-            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remover links, mantener texto
+        // Limpiar el contenedor y cambiar a innerHTML para manejar HTML
+        this.noticiasContentElement.innerHTML = '';
+        
+        // Calcular tiempo transcurrido desde la última modificación
+        let timeAgo = '';
+        if (fileDate) {
+            const now = new Date();
+            const diffMs = now - fileDate;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            const diffWeeks = Math.floor(diffDays / 7);
+            const diffMonths = Math.floor(diffDays / 30);
+            const diffYears = Math.floor(diffDays / 365);
+            
+            if (diffSeconds < 60) {
+                timeAgo = `(hace ${diffSeconds}s)`;
+            } else if (diffMinutes < 60) {
+                timeAgo = `(hace ${diffMinutes}m)`;
+            } else if (diffHours < 24) {
+                timeAgo = `(hace ${diffHours}h)`;
+            } else if (diffDays === 1) {
+                timeAgo = `(hace 1 día)`;
+            } else if (diffDays < 7) {
+                timeAgo = `(hace ${diffDays} días)`;
+            } else if (diffWeeks === 1) {
+                timeAgo = `(hace 1 semana)`;
+            } else if (diffWeeks < 4) {
+                timeAgo = `(hace ${diffWeeks} semanas)`;
+            } else if (diffMonths === 1) {
+                timeAgo = `(hace 1 mes)`;
+            } else if (diffMonths < 12) {
+                timeAgo = `(hace ${diffMonths} meses)`;
+            } else if (diffYears === 1) {
+                timeAgo = `(hace 1 año)`;
+            } else if (diffYears > 1) {
+                timeAgo = `(hace ${diffYears} años)`;
+            } else {
+                // Formato dd/mm/aa para fechas muy antiguas
+                const day = fileDate.getDate().toString().padStart(2, '0');
+                const month = (fileDate.getMonth() + 1).toString().padStart(2, '0');
+                const year = fileDate.getFullYear().toString().slice(-2);
+                timeAgo = `(${day}/${month}/${year})`;
+            }
+        }
+        
+        // Procesar el contenido markdown
+        let processedContent = content
+            // Remover referencias de imágenes con formato [![IMG](...)]
+            .replace(/\[\!\[IMG\]\([^)]*\)\]/g, '')
+            // Remover otros enlaces de imagen simples ![...](...) que no queremos mostrar
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+            // Procesar encabezados de markdown manteniendo la jerarquía
+            .replace(/^### (.+)$/gm, '<h4 style="font-size: 14px; font-weight: 600; margin: 8px 0 4px 0; color: rgba(255, 255, 255, 0.95);">$1</h4>')
+            .replace(/^## (.+)$/gm, '<h3 style="font-size: 16px; font-weight: 600; margin: 10px 0 6px 0; color: rgba(255, 255, 255, 0.95);">$1</h3>')
+            .replace(/^# (.+)$/gm, '<h2 style="font-size: 18px; font-weight: 600; margin: 12px 0 8px 0; color: rgba(255, 255, 255, 0.95);">$1</h2>')
+            // Procesar texto en negrita
+            .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 600; color: rgba(255, 255, 255, 0.95);">$1</strong>')
+            // Procesar texto en cursiva
+            .replace(/\*(.+?)\*/g, '<em style="font-style: italic; color: rgba(255, 255, 255, 0.9);">$1</em>')
+            // Procesar enlaces manteniendo solo el texto
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            // Limpiar líneas vacías múltiples
+            .replace(/\n\s*\n/g, '\n')
             .trim();
         
-        // Si el contenido es muy corto, usar fallback
-        if (cleanContent.length < 10) {
+        // Si el contenido es muy corto después del procesamiento, usar fallback
+        if (processedContent.replace(/<[^>]*>/g, '').length < 10) {
             this.displayFallbackNews();
             return;
         }
         
-        // Truncar el texto si es muy largo para que quepa en el contenedor
-        const maxLength = 280; // Aproximadamente lo que cabe en el contenedor
-        if (cleanContent.length > maxLength) {
-            cleanContent = cleanContent.substring(0, maxLength - 3) + '...';
+        // Crear el contenido final con la fecha
+        let finalHTML = '';
+        
+        // Agregar indicador de tiempo si existe
+        if (timeAgo) {
+            finalHTML += `<div style="font-size: 9px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; font-weight: 400;">${timeAgo}</div>`;
         }
         
-        this.noticiasContentElement.textContent = cleanContent;
+        // Dividir en párrafos y procesar cada uno
+        const paragraphs = processedContent.split('\n').filter(p => p.trim());
+        
+        for (let i = 0; i < paragraphs.length; i++) {
+            const paragraph = paragraphs[i].trim();
+            
+            // Si ya es un encabezado HTML, agregarlo directamente
+            if (paragraph.startsWith('<h')) {
+                finalHTML += paragraph;
+            } else if (paragraph.length > 0) {
+                // Es un párrafo normal
+                finalHTML += `<p style="margin: 4px 0; line-height: 1.4; font-size: 12px; color: rgba(255, 255, 255, 0.9);">${paragraph}</p>`;
+            }
+        }
+        
+        // Aplicar estilos de contenedor para mejor interlineado
+        this.noticiasContentElement.style.cssText += `
+            line-height: 1.3;
+            word-spacing: normal;
+            letter-spacing: 0px;
+        `;
+        
+        this.noticiasContentElement.innerHTML = finalHTML;
     }
     
     displayFallbackNews() {
@@ -770,6 +883,34 @@ class MainMenuState {
         
         const fallbackContent = 'Bienvenido a Pulse! Aquí encontrarás las últimas noticias y actualizaciones del juego. Mantente al día con nuevas funcionalidades, eventos especiales y mucho más...';
         this.noticiasContentElement.textContent = fallbackContent;
+    }
+    
+    extractAndDisplayImage(markdownContent) {
+        if (!this.noticiasBitmapElement) return;
+        
+        // Buscar la primera imagen en el markdown usando regex
+        const imageRegex = /!\[.*?\]\((.*?)\)/;
+        const match = markdownContent.match(imageRegex);
+        
+        if (match && match[1]) {
+            const imagePath = match[1];
+            
+            // Configurar el elemento img directamente
+            this.noticiasBitmapElement.onload = () => {
+                console.log('Imagen de noticias cargada correctamente');
+            };
+            
+            this.noticiasBitmapElement.onerror = () => {
+                console.log('Error al cargar imagen, usando fallback');
+                this.displayFallbackImage();
+            };
+            
+            // Asignar la ruta de la imagen
+            this.noticiasBitmapElement.src = imagePath.startsWith('http') ? imagePath : `web/news/${imagePath}`;
+        } else {
+            // Si no se encuentra imagen en el markdown, usar fallback
+            this.displayFallbackImage();
+        }
     }
     
     /**
@@ -1043,7 +1184,7 @@ class MainMenuState {
      * Actualiza la posición del background basado en la posición del mouse
      */
     updateParallax(event) {
-        if (!this.backgroundImage || !this.parallaxEnabled) return;
+        if (!this.backgroundImage || !this.parallaxEnabled || this.isModalOpen) return;
         
         const gameContainer = document.getElementById('gameContainer');
         if (!gameContainer) return;
@@ -1060,7 +1201,7 @@ class MainMenuState {
         const centerY = mouseY - 0.5;
         
         // Calcular el desplazamiento del parallax (intensidad más sutil para el main menu)
-        const parallaxStrength = 70; // Reducido para movimiento más sutil
+        const parallaxStrength = 55; // Intensidad ajustada
         this.targetParallaxX = centerX * parallaxStrength;
         this.targetParallaxY = centerY * parallaxStrength;
         
@@ -1074,7 +1215,7 @@ class MainMenuState {
      * Anima el parallax con interpolación suave usando requestAnimationFrame
      */
     animateParallax() {
-        if (!this.parallaxEnabled || !this.backgroundImage) {
+        if (!this.parallaxEnabled || !this.backgroundImage || this.isModalOpen) {
             this.parallaxAnimationId = null;
             return;
         }
@@ -1086,8 +1227,9 @@ class MainMenuState {
         this.currentParallaxX += (this.targetParallaxX - this.currentParallaxX) * lerpFactor;
         this.currentParallaxY += (this.targetParallaxY - this.currentParallaxY) * lerpFactor;
         
-        // Aplicar la transformación suavizada
-        this.backgroundImage.style.transform = `translate(${this.currentParallaxX}px, ${this.currentParallaxY}px)`;
+        // Aplicar la transformación suavizada con el zoom
+        const scaleValue = this.backgroundZoomed ? 'scale(1.1)' : 'scale(1)';
+        this.backgroundImage.style.transform = `translate(${this.currentParallaxX}px, ${this.currentParallaxY}px) ${scaleValue}`;
         
         // Continuar la animación si hay diferencia significativa
         const diffX = Math.abs(this.targetParallaxX - this.currentParallaxX);
@@ -1118,19 +1260,95 @@ class MainMenuState {
                 this.parallaxAnimationId = null;
             }
             
-            // Resetear valores
+            // Resetear valores de parallax
             this.currentParallaxX = 0;
             this.currentParallaxY = 0;
             this.targetParallaxX = 0;
             this.targetParallaxY = 0;
             
-            // Resetear la posición del fondo
-            if (this.backgroundImage) {
-                this.backgroundImage.style.transform = 'translate(0px, 0px)';
-            }
-            
             console.log('Main menu parallax effect disabled');
         }
+    }
+    
+    /**
+     * Anima el zoom del background a escala original (sin zoom)
+     */
+    zoomBackgroundToOriginal() {
+        if (!this.backgroundImage || !this.backgroundZoomed) return;
+        
+        this.backgroundZoomed = false;
+        
+        // Cancelar animación de zoom en curso
+        if (this.backgroundZoomAnimationId) {
+            cancelAnimationFrame(this.backgroundZoomAnimationId);
+            this.backgroundZoomAnimationId = null;
+        }
+        
+        // Animar suavemente a escala original
+        this.backgroundImage.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        this.backgroundImage.style.transform = 'translate(0px, 0px) scale(1)';
+        
+        console.log('Background zoomed to original scale');
+    }
+    
+    /**
+     * Anima el zoom del background de vuelta al estado zoom (130%)
+     */
+    zoomBackgroundToZoomed() {
+        if (!this.backgroundImage || this.backgroundZoomed) return;
+        
+        this.backgroundZoomed = true;
+        
+        // Animar suavemente de vuelta al zoom
+        this.backgroundImage.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        this.backgroundImage.style.transform = 'translate(0px, 0px) scale(1.1)';
+        
+        console.log('Background zoomed back to zoomed scale');
+        
+        // Remover transition después de la animación para permitir parallax suave
+        setTimeout(() => {
+            if (this.backgroundImage) {
+                this.backgroundImage.style.transition = '';
+            }
+        }, 800);
+    }
+    
+    /**
+     * Desactiva el parallax y hace zoom out del background
+     */
+    disableParallaxAndZoomOut() {
+        if (this.isModalOpen) return; // Ya está desactivado
+        
+        this.isModalOpen = true;
+        
+        // Desactivar parallax primero
+        this.removeParallaxEffect();
+        
+        // Luego hacer zoom out
+        this.zoomBackgroundToOriginal();
+        
+        console.log('Parallax disabled and background zoomed out for modal');
+    }
+    
+    /**
+     * Reactiva el parallax y hace zoom in del background
+     */
+    enableParallaxAndZoomIn() {
+        if (!this.isModalOpen) return; // Ya está activado
+        
+        this.isModalOpen = false;
+        
+        // Primero hacer zoom in
+        this.zoomBackgroundToZoomed();
+        
+        // Luego reactivar parallax después de la animación
+        setTimeout(() => {
+            if (!this.isModalOpen) { // Verificar que no se haya abierto otra modal
+                this.setupParallaxEffect();
+            }
+        }, 800); // Esperar a que termine la animación de zoom
+        
+        console.log('Background zoomed in and parallax enabled after modal close');
     }
     
     /**
@@ -1215,11 +1433,32 @@ class MainMenuState {
                 }
             }, delay);
         });
-        
-        // Recapturar el bitmap después de que todos los elementos estén visibles
-        setTimeout(() => {
-            this.captureBitmap();
-        }, 1500);
+    }
+    
+    /**
+     * Limpia el sistema de audio
+     */
+    destroyAudioSystem() {
+        try {
+            Object.values(this.audioSystem).forEach(audio => {
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.src = '';
+                    audio.load(); // Resetea el elemento audio
+                }
+            });
+            
+            this.audioSystem = {
+                openWindow: null,
+                clickDown: null,
+                clickUp: null
+            };
+            
+            console.log('Audio system destroyed');
+        } catch (error) {
+            console.warn('Error destroying audio system:', error);
+        }
     }
     
     // Métodos de utilidad para otros estados
@@ -1229,6 +1468,15 @@ class MainMenuState {
         
         // Limpiar efecto parallax
         this.removeParallaxEffect();
+        
+        // Limpiar animaciones de zoom de background
+        if (this.backgroundZoomAnimationId) {
+            cancelAnimationFrame(this.backgroundZoomAnimationId);
+            this.backgroundZoomAnimationId = null;
+        }
+        
+        // Limpiar sistema de audio
+        this.destroyAudioSystem();
         
         // Limpiar modal de info si está abierta
         if (this.isInfoModalOpen) {
